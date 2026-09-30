@@ -82,7 +82,9 @@ class AlarmActivity : ComponentActivity() {
                 LaunchedEffect(Unit) {
                     while (isActive) {
                         holder.tick()
-                        player?.volume = SunriseRenderer.toneVolume(holder.progress)
+                        // Full volume once ringing (also covers anticipation = 0).
+                        player?.volume =
+                            if (holder.ringing) 1f else SunriseRenderer.toneVolume(holder.progress)
                         // Screen brightness follows the dawn too (window attribute).
                         window.attributes =
                             window.attributes.apply {

@@ -10,6 +10,8 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +25,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -300,7 +304,8 @@ private fun AlarmEditorDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(if (alarm == null) R.string.add_alarm else R.string.edit_alarm)) },
         text = {
-            Column {
+            // Scrollable so the editor never clips in landscape or small screens.
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 TimePicker(state = timePickerState)
                 Spacer(modifier = Modifier.height(12.dp))
                 DayChipRow(selectedDays = selectedDays, onToggleDay = { day ->
@@ -368,12 +373,18 @@ private fun AlarmEditorDialog(
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun DayChipRow(
     selectedDays: Set<Int>,
     onToggleDay: (Int) -> Unit,
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+    // FlowRow wraps instead of clipping: 7 chips never fit a portrait dialog
+    // width, and landscape is even narrower in height.
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
         AlarmDays.ALL.forEach { day ->
             FilterChip(
                 selected = day in selectedDays,
@@ -390,7 +401,8 @@ private fun Alarm.daysText(): String {
     val days = AlarmDays.fromBitmask(daysBitmask)
     if (days.isEmpty()) return ""
     if (days.size == 7) return "Todos los días"
-    return days.sorted().joinToString(" ") { it.shortLabel() }
+    // fromBitmask already yields Monday-first display order; do not re-sort.
+    return days.joinToString(" ") { it.shortLabel() }
 }
 
 private fun Int.shortLabel(): String =

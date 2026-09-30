@@ -15,8 +15,13 @@ object AlarmDays {
     const val FRIDAY = Calendar.FRIDAY
     const val SATURDAY = Calendar.SATURDAY
 
-    /** All days in [Calendar.DAY_OF_WEEK] order, SUNDAY first. */
-    val ALL: Set<Int> = setOf(SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY)
+    /**
+     * All days in display order: the week starts on Monday (L M X J V S D).
+     * Storage stays aligned with [Calendar.DAY_OF_WEEK]; only the UI order
+     * follows the Spanish convention.
+     */
+    val ALL: Set<Int> =
+        linkedSetOf(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY)
 
     fun toBitmask(days: Set<Int>): Int = days.fold(0) { mask, day -> mask or (1 shl (day - SUNDAY)) }
 

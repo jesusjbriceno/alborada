@@ -61,6 +61,7 @@ class AlarmManagerScheduler(
                 .putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id)
                 .putExtra(AlarmReceiver.EXTRA_ALARM_START_EPOCH, alarmStartEpoch)
                 .putExtra(AlarmReceiver.EXTRA_ANTICIPATION_MINUTES, alarm.anticipationMinutes)
+                .putExtra(AlarmReceiver.EXTRA_SOUND_URI, alarm.soundUri)
         return PendingIntent.getBroadcast(
             context,
             alarm.id.toInt(),

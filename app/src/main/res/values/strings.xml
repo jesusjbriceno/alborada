@@ -14,6 +14,11 @@
     <string name="exact_alarm_denied_message">Alarmas exactas denegadas: las alarmas pueden sonar tarde. Tocá para abrirlo en los ajustes.</string>
     <string name="full_screen_denied_message">Avisos a pantalla completa desactivados: el amanecer no se mostrará sobre el bloqueo. Tocá para habilitarlo.</string>
 
+    <!-- Sound picker -->
+    <string name="sound_label">Sonido</string>
+    <string name="sound_picker_title">Elegir sonido</string>
+    <string name="sound_system_tones">Tonos del sistema</string>
+
     <!-- Ringing notification (full-screen intent) -->
     <string name="notification_channel_alarms">Alarmas</string>
     <string name="notification_channel_alarms_description">Avisos de las alarmas que suenan</string>

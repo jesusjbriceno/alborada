@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Alarm::class], version = 2, exportSchema = false)
+@Database(entities = [Alarm::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun alarmDao(): AlarmDao
 
@@ -17,6 +17,15 @@ abstract class AppDatabase : RoomDatabase() {
                 override fun migrate(db: SupportSQLiteDatabase) {
                     db.execSQL(
                         "ALTER TABLE alarms ADD COLUMN anticipationMinutes INTEGER NOT NULL DEFAULT 15",
+                    )
+                }
+            }
+
+        private val MIGRATION_2_3 =
+            object : Migration(2, 3) {
+                override fun migrate(db: SupportSQLiteDatabase) {
+                    db.execSQL(
+                        "ALTER TABLE alarms ADD COLUMN soundUri TEXT NOT NULL DEFAULT ''",
                     )
                 }
             }
@@ -31,7 +40,7 @@ abstract class AppDatabase : RoomDatabase() {
                         context.applicationContext,
                         AppDatabase::class.java,
                         "alborada.db",
-                    ).addMigrations(MIGRATION_1_2)
+                    ).addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build()
                     .also { instance = it }
             }

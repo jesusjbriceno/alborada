@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -42,6 +43,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
@@ -68,6 +70,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jesusjbriceno.alborada.R
 import com.jesusjbriceno.alborada.alarm.AlarmListViewModel
+import com.jesusjbriceno.alborada.alarm.SoundCatalog
 import com.jesusjbriceno.alborada.data.local.Alarm
 import com.jesusjbriceno.alborada.domain.AlarmDays
 
@@ -149,7 +152,7 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = viewModel()) {
         AlarmEditorDialog(
             alarm = null,
             onDismiss = { creating = false },
-            onSave = { hour, minute, days, label, anticipation ->
+            onSave = { hour, minute, days, label, anticipation, soundUri ->
                 viewModel.upsert(
                     id = 0L,
                     hour = hour,
@@ -157,6 +160,7 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = viewModel()) {
                     days = days,
                     label = label,
                     anticipationMinutes = anticipation,
+                    soundUri = soundUri,
                 )
                 creating = false
             },
@@ -167,7 +171,7 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = viewModel()) {
         AlarmEditorDialog(
             alarm = alarm,
             onDismiss = { editing = null },
-            onSave = { hour, minute, days, label, anticipation ->
+            onSave = { hour, minute, days, label, anticipation, soundUri ->
                 viewModel.upsert(
                     id = alarm.id,
                     hour = hour,
@@ -175,6 +179,7 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = viewModel()) {
                     days = days,
                     label = label,
                     anticipationMinutes = anticipation,
+                    soundUri = soundUri,
                 )
                 editing = null
             },
@@ -291,7 +296,7 @@ private fun AlarmCard(
 private fun AlarmEditorDialog(
     alarm: Alarm?,
     onDismiss: () -> Unit,
-    onSave: (hour: Int, minute: Int, days: Set<Int>, label: String, anticipationMinutes: Int) -> Unit,
+    onSave: (hour: Int, minute: Int, days: Set<Int>, label: String, anticipationMinutes: Int, soundUri: String) -> Unit,
     onDelete: (() -> Unit)? = null,
 ) {
     val timePickerState =
@@ -311,6 +316,9 @@ private fun AlarmEditorDialog(
             (alarm?.anticipationMinutes ?: Alarm.DEFAULT_ANTICIPATION_MINUTES).toFloat(),
         )
     }
+    var soundUri by remember { mutableStateOf(alarm?.soundUri ?: "") }
+    var showSoundPicker by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -354,6 +362,19 @@ private fun AlarmEditorDialog(
                         Alarm.MIN_ANTICIPATION_MINUTES.toFloat()..Alarm.MAX_ANTICIPATION_MINUTES.toFloat(),
                     steps = 11, // 5-minute steps: 0, 5, ..., 60
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth().clickable { showSoundPicker = true },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(stringResource(R.string.sound_label))
+                    Text(
+                        text = soundLabel(context, soundUri),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
             }
         },
         confirmButton = {
@@ -364,6 +385,7 @@ private fun AlarmEditorDialog(
                     selectedDays,
                     label.trim(),
                     anticipation.toInt(),
+                    soundUri,
                 )
             }) {
                 Text(stringResource(R.string.save))
@@ -384,6 +406,17 @@ private fun AlarmEditorDialog(
             }
         },
     )
+
+    if (showSoundPicker) {
+        SoundPickerDialog(
+            current = soundUri,
+            onPick = { picked ->
+                soundUri = picked
+                showSoundPicker = false
+            },
+            onDismiss = { showSoundPicker = false },
+        )
+    }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -458,4 +491,108 @@ private fun Context.openFullScreenSettings() {
         }
     runCatching { startActivity(intent) }
         .onFailure { startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)) }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SoundPickerDialog(
+    current: String,
+    onPick: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val context = LocalContext.current
+    val systemTones = remember(context) { querySystemTones(context) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.sound_picker_title)) },
+        text = {
+            Column(
+                modifier =
+                    Modifier
+                        .verticalScroll(rememberScrollState()),
+            ) {
+                SoundCatalog.bundledByCategory.forEach { (category, sounds) ->
+                    Text(
+                        text = category,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
+                    )
+                    sounds.forEach { sound ->
+                        SoundOptionRow(
+                            label = sound.title,
+                            selected = current == sound.uri,
+                            onClick = { onPick(sound.uri) },
+                        )
+                    }
+                }
+
+                if (systemTones.isNotEmpty()) {
+                    Text(
+                        text = context.getString(R.string.sound_system_tones),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
+                    )
+                    systemTones.forEach { (title, uri) ->
+                        SoundOptionRow(
+                            label = title,
+                            selected = current == uri,
+                            onClick = { onPick(uri) },
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+    )
+}
+
+@Composable
+private fun SoundOptionRow(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        RadioButton(selected = selected, onClick = onClick)
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = label, style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+@Composable
+private fun soundLabel(
+    context: Context,
+    soundUri: String,
+): String {
+    if (soundUri.isBlank()) return SoundCatalog.defaultSound.title
+    return SoundCatalog.titleOf(soundUri)
+        ?: if (soundUri.startsWith("content://")) {
+            context.getString(R.string.sound_system_tones)
+        } else {
+            SoundCatalog.defaultSound.title
+        }
+}
+
+private fun querySystemTones(context: Context): List<Pair<String, String>> {
+    val manager = RingtoneManager(context)
+    manager.setType(RingtoneManager.TYPE_RINGTONE)
+    val cursor = manager.cursor ?: return emptyList()
+    return buildList {
+        cursor.moveToFirst()
+        do {
+            val uri = manager.getRingtoneUri(cursor.position)?.toString() ?: continue
+            val title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX)
+            add(title to uri)
+        } while (cursor.moveToNext())
+    }
 }

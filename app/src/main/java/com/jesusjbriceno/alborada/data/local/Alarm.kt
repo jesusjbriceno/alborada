@@ -18,6 +18,8 @@ data class Alarm(
     val label: String = "",
     /** Minutes before the alarm time the simulated sunrise (and tone) start. */
     val anticipationMinutes: Int = DEFAULT_ANTICIPATION_MINUTES,
+    /** Sound media uri; empty = the default bundled dawn tone. */
+    val soundUri: String = "",
 ) {
     companion object {
         const val DEFAULT_ANTICIPATION_MINUTES = 15

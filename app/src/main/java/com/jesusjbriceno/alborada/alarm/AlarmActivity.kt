@@ -53,6 +53,9 @@ class AlarmActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val soundUri =
+            intent.getStringExtra(AlarmReceiver.EXTRA_SOUND_URI)
+                ?: SoundCatalog.defaultSound.uri
         alarmId = intent.getLongExtra(AlarmReceiver.EXTRA_ALARM_ID, AlarmReceiver.NO_ID)
         val alarmStartEpoch =
             intent.getLongExtra(AlarmReceiver.EXTRA_ALARM_START_EPOCH, System.currentTimeMillis())
@@ -104,7 +107,7 @@ class AlarmActivity : ComponentActivity() {
 
         player =
             ExoPlayer.Builder(this).build().apply {
-                setMediaItem(MediaItem.fromUri("android.resource://$packageName/${R.raw.sunrise_tone}"))
+                setMediaItem(MediaItem.fromUri(SoundCatalog.resolveUri(soundUri)))
                 repeatMode = Player.REPEAT_MODE_ONE
                 volume = 0f
                 prepare()

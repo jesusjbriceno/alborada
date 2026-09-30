@@ -98,6 +98,7 @@ object RingingNotifier {
                 putExtra(AlarmReceiver.EXTRA_ALARM_START_EPOCH, alarmStartEpoch)
                 putExtra(AlarmReceiver.EXTRA_ANTICIPATION_MINUTES, alarm.anticipationMinutes)
                 putExtra(AlarmReceiver.EXTRA_ALARM_LABEL, alarm.label)
+                putExtra(AlarmReceiver.EXTRA_SOUND_URI, alarm.soundUri)
             }
         return PendingIntent.getActivity(
             context,

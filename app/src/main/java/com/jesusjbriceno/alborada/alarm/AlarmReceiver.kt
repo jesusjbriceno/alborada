@@ -52,6 +52,7 @@ class AlarmReceiver : BroadcastReceiver() {
         const val EXTRA_ALARM_START_EPOCH = "alarm_start_epoch"
         const val EXTRA_ANTICIPATION_MINUTES = "anticipation_minutes"
         const val EXTRA_ALARM_LABEL = "alarm_label"
+        const val EXTRA_SOUND_URI = "sound_uri"
         const val NO_ID = -1L
     }
 }

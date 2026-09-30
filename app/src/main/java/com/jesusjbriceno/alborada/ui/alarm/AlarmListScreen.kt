@@ -39,6 +39,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -49,6 +50,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -135,8 +137,15 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = viewModel()) {
         AlarmEditorDialog(
             alarm = null,
             onDismiss = { creating = false },
-            onSave = { hour, minute, days, label ->
-                viewModel.upsert(id = 0L, hour = hour, minute = minute, days = days, label = label)
+            onSave = { hour, minute, days, label, anticipation ->
+                viewModel.upsert(
+                    id = 0L,
+                    hour = hour,
+                    minute = minute,
+                    days = days,
+                    label = label,
+                    anticipationMinutes = anticipation,
+                )
                 creating = false
             },
         )
@@ -146,8 +155,15 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = viewModel()) {
         AlarmEditorDialog(
             alarm = alarm,
             onDismiss = { editing = null },
-            onSave = { hour, minute, days, label ->
-                viewModel.upsert(id = alarm.id, hour = hour, minute = minute, days = days, label = label)
+            onSave = { hour, minute, days, label, anticipation ->
+                viewModel.upsert(
+                    id = alarm.id,
+                    hour = hour,
+                    minute = minute,
+                    days = days,
+                    label = label,
+                    anticipationMinutes = anticipation,
+                )
                 editing = null
             },
             onDelete = {
@@ -235,6 +251,16 @@ private fun AlarmCard(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                if (alarm.anticipationMinutes > 0) {
+                    Text(
+                        text = stringResource(
+                            R.string.alarm_anticipation_format,
+                            alarm.anticipationMinutes,
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
             Switch(
                 checked = alarm.enabled,
@@ -249,7 +275,7 @@ private fun AlarmCard(
 private fun AlarmEditorDialog(
     alarm: Alarm?,
     onDismiss: () -> Unit,
-    onSave: (hour: Int, minute: Int, days: Set<Int>, label: String) -> Unit,
+    onSave: (hour: Int, minute: Int, days: Set<Int>, label: String, anticipationMinutes: Int) -> Unit,
     onDelete: (() -> Unit)? = null,
 ) {
     val timePickerState =
@@ -264,6 +290,11 @@ private fun AlarmEditorDialog(
         )
     }
     var label by remember { mutableStateOf(alarm?.label ?: "") }
+    var anticipation by remember {
+        mutableFloatStateOf(
+            (alarm?.anticipationMinutes ?: Alarm.DEFAULT_ANTICIPATION_MINUTES).toFloat(),
+        )
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -284,6 +315,27 @@ private fun AlarmEditorDialog(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(stringResource(R.string.alarm_anticipation_label))
+                    Text(
+                        text = stringResource(
+                            R.string.alarm_anticipation_format,
+                            anticipation.toInt(),
+                        ),
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                }
+                Slider(
+                    value = anticipation,
+                    onValueChange = { anticipation = it },
+                    valueRange = Alarm.MIN_ANTICIPATION_MINUTES.toFloat()..
+                        Alarm.MAX_ANTICIPATION_MINUTES.toFloat(),
+                    steps = 11, // 5-minute steps: 0, 5, ..., 60
+                )
             }
         },
         confirmButton = {
@@ -293,6 +345,7 @@ private fun AlarmEditorDialog(
                     timePickerState.minute,
                     selectedDays,
                     label.trim(),
+                    anticipation.toInt(),
                 )
             }) {
                 Text(stringResource(R.string.save))

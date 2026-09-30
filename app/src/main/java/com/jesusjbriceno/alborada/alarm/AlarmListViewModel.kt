@@ -39,6 +39,7 @@ class AlarmListViewModel(
         minute: Int,
         days: Set<Int>,
         label: String,
+        anticipationMinutes: Int,
     ) {
         viewModelScope.launch {
             when (id) {
@@ -51,6 +52,7 @@ class AlarmListViewModel(
                                 com.jesusjbriceno.alborada.domain.AlarmDays
                                     .toBitmask(days),
                             label = label,
+                            anticipationMinutes = anticipationMinutes,
                         )
                     val savedId = repository.upsert(alarm)
                     reschedule(alarm.copy(id = savedId))
@@ -66,6 +68,7 @@ class AlarmListViewModel(
                                 com.jesusjbriceno.alborada.domain.AlarmDays
                                     .toBitmask(days),
                             label = label,
+                            anticipationMinutes = anticipationMinutes,
                         )
                     repository.upsert(updated)
                     reschedule(updated)

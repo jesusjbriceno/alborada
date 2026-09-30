@@ -10,8 +10,10 @@ import com.jesusjbriceno.alborada.domain.AlarmScheduler
 import com.jesusjbriceno.alborada.domain.NextAlarmCalculator
 
 /**
- * [AlarmScheduler] backed by [AlarmManager] with exact, while-idle alarms so
- * the system wakes the device and fires on time.
+ * [AlarmScheduler] backed by [AlarmManager] with exact, while-idle alarms.
+ * The event is scheduled at the *sunrise start* (anticipation before the
+ * alarm time) and carries the real alarm instant so the activity knows when
+ * to switch from the dawn ramp to full ringing.
  */
 class AlarmManagerScheduler(
     private val context: Context,
@@ -26,28 +28,38 @@ class AlarmManagerScheduler(
         cancel(alarm)
         if (!alarm.enabled) return
         val next = NextAlarmCalculator.nextOccurrenceMillis(alarm, fromMillis) ?: return
+        val sunriseStart = next - alarm.anticipationMinutes * MINUTE_MILLIS
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
-            next,
-            pendingIntentFor(alarm.id),
+            sunriseStart,
+            pendingIntentFor(alarm, next),
         )
     }
 
     override fun cancel(alarm: Alarm) {
-        alarmManager.cancel(pendingIntentFor(alarm.id))
+        alarmManager.cancel(pendingIntentFor(alarm, 0L))
     }
 
     override fun canScheduleExact(): Boolean = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()
 
-    private fun pendingIntentFor(alarmId: Long): PendingIntent {
+    private fun pendingIntentFor(
+        alarm: Alarm,
+        alarmStartEpoch: Long,
+    ): PendingIntent {
         val intent =
             Intent(context, AlarmReceiver::class.java)
-                .putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId)
+                .putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id)
+                .putExtra(AlarmReceiver.EXTRA_ALARM_START_EPOCH, alarmStartEpoch)
+                .putExtra(AlarmReceiver.EXTRA_ANTICIPATION_MINUTES, alarm.anticipationMinutes)
         return PendingIntent.getBroadcast(
             context,
-            alarmId.toInt(),
+            alarm.id.toInt(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
+    }
+
+    private companion object {
+        const val MINUTE_MILLIS = 60_000L
     }
 }

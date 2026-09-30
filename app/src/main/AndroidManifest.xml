@@ -29,6 +29,15 @@
             android:name=".alarm.AlarmReceiver"
             android:exported="false" />
 
+        <activity
+            android:name=".alarm.AlarmActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:showWhenLocked="true"
+            android:theme="@style/Theme.Alborada.Fullscreen"
+            android:turnScreenOn="true" />
+
         <receiver
             android:name=".alarm.BootReceiver"
             android:exported="false">

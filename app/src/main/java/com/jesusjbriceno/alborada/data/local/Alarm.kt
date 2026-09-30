@@ -16,8 +16,14 @@ data class Alarm(
     val daysBitmask: Int = 0,
     val enabled: Boolean = true,
     val label: String = "",
+    /** Minutes before the alarm time the simulated sunrise (and tone) start. */
+    val anticipationMinutes: Int = DEFAULT_ANTICIPATION_MINUTES,
 ) {
     companion object {
+        const val DEFAULT_ANTICIPATION_MINUTES = 15
+        const val MIN_ANTICIPATION_MINUTES = 0
+        const val MAX_ANTICIPATION_MINUTES = 60
+
         /** A one-shot alarm that never repeats. */
         fun once(
             hour: Int,

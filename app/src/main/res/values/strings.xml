@@ -3,12 +3,6 @@
     <string name="app_name">Alborada</string>
     <string name="home_subtitle">Despertar suave con el amanecer</string>
 
-    <!-- Alarm notifications -->
-    <string name="notification_channel_alarms">Alarmas</string>
-    <string name="notification_channel_alarms_description">Avisos de las alarmas que suenan</string>
-    <string name="notification_alarm_title">Es hora de despertar</string>
-    <string name="notification_alarm_time">Alarma a las %1$02d:%2$02d</string>
-
     <!-- Alarm list UI -->
     <string name="add_alarm">Nueva alarma</string>
     <string name="edit_alarm">Editar alarma</string>
@@ -18,4 +12,12 @@
     <string name="label_hint">Etiqueta (opcional)</string>
     <string name="alarm_empty">Sin alarmas todavía. Tocá + para crear la primera.</string>
     <string name="exact_alarm_denied_message">Alarmas exactas denegadas: las alarmas pueden sonar tarde. Tocá para abrirlo en los ajustes.</string>
+
+    <!-- Sunrise / ringing activity -->
+    <string name="alarm_anticipation_label">Amanecer (min antes)</string>
+    <string name="alarm_anticipation_format">%1$d min antes</string>
+    <string name="sunrise_running">Amanecer en curso</string>
+    <string name="ringing_anticipation">Amanecer de %1$s min</string>
+    <string name="ringing_title">Es hora de despertar</string>
+    <string name="ringing_stop">Detener</string>
 </resources>

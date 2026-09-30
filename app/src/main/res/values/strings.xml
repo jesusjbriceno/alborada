@@ -2,4 +2,10 @@
 <resources>
     <string name="app_name">Alborada</string>
     <string name="home_subtitle">Despertar suave con el amanecer</string>
+
+    <!-- Alarm notifications -->
+    <string name="notification_channel_alarms">Alarmas</string>
+    <string name="notification_channel_alarms_description">Avisos de las alarmas que suenan</string>
+    <string name="notification_alarm_title">Es hora de despertar</string>
+    <string name="notification_alarm_time">Alarma a las %1$02d:%2$02d</string>
 </resources>

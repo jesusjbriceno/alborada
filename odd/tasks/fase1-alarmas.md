@@ -110,4 +110,24 @@ consentimiento explícito). Las alarmas además se probarán en dispositivo
 - Probar una semana en el móvil de Jesús (tarea #6): adb install, alarma a
   1-2 min con antelación 0 para verificar el disparo exacto; luego amanecer.
 - Endurecimiento si el sistema mata la alarma: foreground service + wake lock.
-- Fase 2: galería de música propia, tonos del sistema, sonidos naturales.
+
+## Fase 2 — Contenido de audio (en curso)
+
+### 2a: catálogo + selector de sonido — HECHA (commit `5192959`)
+
+- 54 MB / 8 pistas (dominio público / CC0, −18 LUFS) importadas a
+  `app/src/main/assets/sounds/` con metadatos en `SoundCatalog`
+  (naturaleza / dormir / ruido blanco). Fuente: CATALOGO.md.
+- `Alarm.soundUri` (Room v3, migración 1→2→3 sin pérdida).
+- Picker de sonido en el editor: sonidos de Alborada por categoría +
+  **tonos del sistema** (RingtoneManager). La alarma reproduce el sonido
+  elegido (Media3), default «Brisa y pájaros».
+
+### 2b: galería de música propia (pendiente, tarea siguiente)
+
+- Importación con el selector del sistema (SAF) copiando a storage privado.
+- Reproducción sin conexión + lista de reproducción / reproducción continua.
+
+### 2c (próximo): modo reloj nocturno — tareas #7/#8 de TAREAS.md
+
+- Fondo oscuro personalizable + varios estilos de reloj (recordado por el usuario).

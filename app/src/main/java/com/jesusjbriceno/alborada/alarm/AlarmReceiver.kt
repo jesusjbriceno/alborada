@@ -37,6 +37,9 @@ class AlarmReceiver : BroadcastReceiver() {
 
                 if (alarm.daysBitmask != 0) {
                     AlarmManagerScheduler(context).scheduleNext(alarm)
+                } else {
+                    // One-shot alarms are spent after firing.
+                    repository.setEnabled(alarm, false)
                 }
             } finally {
                 pendingResult.finish()

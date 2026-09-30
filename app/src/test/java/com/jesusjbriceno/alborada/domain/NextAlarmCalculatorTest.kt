@@ -106,12 +106,15 @@ class NextAlarmCalculatorTest {
     }
 
     @Test
-    fun `one shot alarm has no occurrence once time passed`() {
-        assertOccurrence(null, 21, 0, emptySet())
+    fun `one shot alarm set after its time fires tomorrow`() {
+        // from Thursday 22:00, one-shot at 21:00 -> Friday 21:00 UTC (2026-10-02).
+        assertOccurrence(dayMillis(2026, Calendar.OCTOBER, 2) + 21 * 3_600_000L, 21, 0, emptySet())
     }
 
     @Test
-    fun `empty day set with a past time returns null`() {
-        assertOccurrence(null, 22, 0, emptySet())
+    fun `empty day set with an earlier time fires tomorrow at that time`() {
+        // from Thursday 22:00, one-shot at 22:00 on Thursday is not an
+        // occurrence; the next one is Friday 22:00 UTC.
+        assertOccurrence(dayMillis(2026, Calendar.OCTOBER, 2) + 22 * 3_600_000L, 22, 0, emptySet())
     }
 }

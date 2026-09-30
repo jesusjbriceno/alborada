@@ -68,7 +68,8 @@ object RingingNotifier {
 
     fun canUseFullScreenIntent(context: Context): Boolean =
         Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE ||
-            context.getSystemService(NotificationManager::class.java)
+            context
+                .getSystemService(NotificationManager::class.java)
                 .canUseFullScreenIntent()
 
     fun dismiss(

@@ -10,8 +10,9 @@ import java.util.TimeZone
  * instant and time zone.
  *
  * Semantics: the next occurrence is always strictly after [fromMillis].
- * An alarm with an empty day set fires once (today, if its time is still
- * ahead); a repeating alarm fires on the next allowed day.
+ * An alarm with an empty day set fires once at the next occurrence of its
+ * time (today if still ahead, otherwise tomorrow); a repeating alarm fires
+ * on the next allowed day.
  */
 object NextAlarmCalculator {
     private const val MAX_SCAN_DAYS = 8
@@ -28,8 +29,12 @@ object NextAlarmCalculator {
         val fromMillisOfDay = millisOfDay(calendar)
 
         if (alarm.daysBitmask == 0) {
-            // One-shot: only today, and only while the time is strictly ahead.
-            if (alarmMillisOfDay <= fromMillisOfDay) return null
+            // One-shot: the next occurrence of the time — today if still
+            // strictly ahead, otherwise tomorrow (so an alarm set at night
+            // for the morning fires as expected).
+            if (alarmMillisOfDay > fromMillisOfDay) return atTime(calendar, alarm)
+            calendar.timeInMillis = fromMillis
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
             return atTime(calendar, alarm)
         }
 

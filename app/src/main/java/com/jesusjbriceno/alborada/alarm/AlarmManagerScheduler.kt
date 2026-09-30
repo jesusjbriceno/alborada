@@ -29,11 +29,21 @@ class AlarmManagerScheduler(
         if (!alarm.enabled) return
         val next = NextAlarmCalculator.nextOccurrenceMillis(alarm, fromMillis) ?: return
         val sunriseStart = next - alarm.anticipationMinutes * MINUTE_MILLIS
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            sunriseStart,
-            pendingIntentFor(alarm, next),
-        )
+        if (canScheduleExact()) {
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                sunriseStart,
+                pendingIntentFor(alarm, next),
+            )
+        } else {
+            // Fall back to an inexact while-idle alarm: it may ring slightly
+            // late, but it must ring rather than stay silent.
+            alarmManager.setAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                sunriseStart,
+                pendingIntentFor(alarm, next),
+            )
+        }
     }
 
     override fun cancel(alarm: Alarm) {

@@ -10,11 +10,11 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -268,10 +268,11 @@ private fun AlarmCard(
                 )
                 if (alarm.anticipationMinutes > 0) {
                     Text(
-                        text = stringResource(
-                            R.string.alarm_anticipation_format,
-                            alarm.anticipationMinutes,
-                        ),
+                        text =
+                            stringResource(
+                                R.string.alarm_anticipation_format,
+                                alarm.anticipationMinutes,
+                            ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -301,7 +302,7 @@ private fun AlarmEditorDialog(
         )
     var selectedDays by remember {
         mutableStateOf(
-            if (alarm == null) emptySet() else AlarmDays.fromBitmask(alarm.daysBitmask),
+            if (alarm == null) AlarmDays.ALL else AlarmDays.fromBitmask(alarm.daysBitmask),
         )
     }
     var label by remember { mutableStateOf(alarm?.label ?: "") }
@@ -338,18 +339,19 @@ private fun AlarmEditorDialog(
                 ) {
                     Text(stringResource(R.string.alarm_anticipation_label))
                     Text(
-                        text = stringResource(
-                            R.string.alarm_anticipation_format,
-                            anticipation.toInt(),
-                        ),
+                        text =
+                            stringResource(
+                                R.string.alarm_anticipation_format,
+                                anticipation.toInt(),
+                            ),
                         style = MaterialTheme.typography.labelLarge,
                     )
                 }
                 Slider(
                     value = anticipation,
                     onValueChange = { anticipation = it },
-                    valueRange = Alarm.MIN_ANTICIPATION_MINUTES.toFloat()..
-                        Alarm.MAX_ANTICIPATION_MINUTES.toFloat(),
+                    valueRange =
+                        Alarm.MIN_ANTICIPATION_MINUTES.toFloat()..Alarm.MAX_ANTICIPATION_MINUTES.toFloat(),
                     steps = 11, // 5-minute steps: 0, 5, ..., 60
                 )
             }

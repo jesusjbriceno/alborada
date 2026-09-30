@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Adaptive icon foreground: sun rising over the horizon, in the safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Sun circle, centered at (54, 32), radius 14. -->
+    <path
+        android:fillColor="#FFB74D"
+        android:pathData="M40,32 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0 z" />
+    <!-- Soft rays (partial arcs behind the circle). -->
+    <path
+        android:fillColor="#FFB74D"
+        android:pathData="M54,10 L56.5,17 L51.5,17 Z" />
+    <path
+        android:fillColor="#FFB74D"
+        android:pathData="M54,54 L56.5,47 L51.5,47 Z" />
+    <path
+        android:fillColor="#FFB74D"
+        android:pathData="M32,32 L39,34.5 L39,29.5 Z" />
+    <path
+        android:fillColor="#FFB74D"
+        android:pathData="M76,32 L69,34.5 L69,29.5 Z" />
+    <!-- Warm horizon line below the sun. -->
+    <path
+        android:fillColor="#FFE0B2"
+        android:pathData="M20,68 h68 v9 h-68 z" />
+    <path
+        android:fillColor="#FFE0B2"
+        android:pathData="M20,77 L30,90 L22,90 Z" />
+    <path
+        android:fillColor="#FFE0B2"
+        android:pathData="M88,77 L78,90 L86,90 Z" />
+</vector>

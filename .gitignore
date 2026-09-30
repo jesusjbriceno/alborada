@@ -1,0 +1,33 @@
+# --- Local Pi runtime state ---
+.atl/
+
+# --- Gradle ---
+.gradle/
+build/
+
+# --- Local configuration (machine-specific) ---
+local.properties
+
+# --- IDE ---
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.kotlin/
+
+# --- Android / Kotlin ---
+captures/
+.externalNativeBuild/
+.cxx/
+*.keystore
+!debug.keystore
+*.jks
+*.pem
+*.apk
+*.aab
+*.ap_
+
+# --- OS ---
+.DS_Store
+Thumbs.db

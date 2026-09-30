@@ -88,9 +88,22 @@ consentimiento explícito). Las alarmas además se probarán en dispositivo
 - La semana arranca en **lunes** (L M X J V S D); almacenamiento sigue en
   `Calendar.DAY_OF_WEEK`, solo cambia el orden de UI.
 - Landscape ilegible → editor con `verticalScroll`.
-- Pendiente: verificar el disparo real del amanecer (el emulador se perdió
-  durante la prueba; la alarma 18:30/5 min quedó guardada pero sin disparo
-  confirmado en logcat).
+### Verificación en emulador (API 35, Android 15) — HECHA
+
+- Scheduler: `dumpsys alarm` muestra `RTC_WAKEUP` exacto con `policy_permission`.
+- Disparo: receiver corrió a su hora (3 wakeups confirmados en stats) y la
+  notificación de alarma se posteó (logcat `NotifAttentionHelper` id=4).
+- **Full-screen intent**: bloqueado el arranque de la actividad desde el
+  receiver (BAL) → solución canónica: notificación con `setFullScreenIntent`
+  + permiso `USE_FULL_SCREEN_INTENT` (denegado por defecto en target 35,
+  habilitable en ajustes). Pantalla bloqueada → abre sobre el lock screen;
+  desbloqueada → heads-up (comportamiento documentado de Android).
+- Pantalla de alarma: «Es hora de despertar» + «Amanecer de 1 min» + botón
+  «Detener» verificado; Detener vuelve a la lista y limpia la notificación.
+- Falta aún: rampa visual real de fases (necesita pantalla bloqueada con
+  minutos de antelación; el anillo está verificado y el renderer testado),
+  prueba en el móvil real (doze/APPs de fabricante) y la semana de prueba
+  (tarea #6).
 
 ## Siguiente unidad
 

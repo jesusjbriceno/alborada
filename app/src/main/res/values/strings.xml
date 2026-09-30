@@ -8,4 +8,14 @@
     <string name="notification_channel_alarms_description">Avisos de las alarmas que suenan</string>
     <string name="notification_alarm_title">Es hora de despertar</string>
     <string name="notification_alarm_time">Alarma a las %1$02d:%2$02d</string>
+
+    <!-- Alarm list UI -->
+    <string name="add_alarm">Nueva alarma</string>
+    <string name="edit_alarm">Editar alarma</string>
+    <string name="delete_alarm">Eliminar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Guardar</string>
+    <string name="label_hint">Etiqueta (opcional)</string>
+    <string name="alarm_empty">Sin alarmas todavía. Tocá + para crear la primera.</string>
+    <string name="exact_alarm_denied_message">Alarmas exactas denegadas: las alarmas pueden sonar tarde. Tocá para abrirlo en los ajustes.</string>
 </resources>

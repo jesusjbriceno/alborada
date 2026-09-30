@@ -19,9 +19,4 @@ interface AlarmScheduler {
 
     /** Whether exact alarms may be scheduled (Android 12+ permission). */
     fun canScheduleExact(): Boolean
-
-    companion object {
-        /** Optional label of a repeating alarm (days set). */
-        const val REPEAT_MINIMUM_INTERVAL_MS = 60_000L
-    }
 }

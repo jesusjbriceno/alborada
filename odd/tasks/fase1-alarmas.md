@@ -1,6 +1,6 @@
 # Feature: Fase 1 — Núcleo de alarmas
 
-Estado: **en curso** · Rama: master (commits directos, trabajo reviewable)
+Estado: **en curso** (unidad amanecer+crescendo hecha) · Rama: master
 
 ## Contexto
 
@@ -62,6 +62,28 @@ revisión como pendiente de reintento (posible `gentle-ai` repair o
 consentimiento explícito). Las alarmas además se probarán en dispositivo
 (tarea #6 de TAREAS.md).
 
+## Unidad 2 — Amanecer simulado + crescendo (hecha · tareas #3 y #4)
+
+- `Alarm.anticipationMinutes` (por defecto 15, slider 0..60 en pasos de 5) con
+  migración Room v1→v2 (ALTER TABLE, sin pérdida de alarmas).
+- El scheduler dispara **al inicio del amanecer** (`alarmStart − anticipation`)
+  con `setExactAndAllowWhileIdle` y pasa la hora real de la alarma en extras.
+- `AlarmActivity` full-screen (showWhenLocked + turnScreenOn + KEEP_SCREEN_ON):
+  colores de fases + brillo de ventana vía `SunriseRenderer` (puro, 5 tests),
+  tono en crescendo con Media3 (volumen smoothstep 0→1, loop) y estado de
+  alarma con botón Detener.
+- Tono incluido: `res/raw/sunrise_tone.ogg` = `brisa-y-pajaros.ogg`
+  (dominio público, Wikimedia Commons, 413 KB — fuente: CATALOGO.md).
+- `AlarmNotifier` eliminado: la actividad ES la alarma (el servicio en primer
+  plano queda como endurecimiento para la semana de prueba en el móvil).
+
+| Commit | Mensaje | Checks |
+|---|---|---|
+| `b799101` | amanecer + crescendo | tests 16/16 · build OK · LSP 0 |
+
 ## Siguiente unidad
 
-- Amanecer simulado (brillo/color progresivo) + crescendo (tareas #3 y #4).
+- Probar una semana en el móvil de Jesús (tarea #6): adb install, alarma a
+  1-2 min con antelación 0 para verificar el disparo exacto; luego amanecer.
+- Endurecimiento si el sistema mata la alarma: foreground service + wake lock.
+- Fase 2: galería de música propia, tonos del sistema, sonidos naturales.

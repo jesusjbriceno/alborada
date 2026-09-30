@@ -31,19 +31,9 @@ class AlarmReceiver : BroadcastReceiver() {
                 val alarmStartEpoch =
                     intent.getLongExtra(EXTRA_ALARM_START_EPOCH, System.currentTimeMillis())
 
-                context.startActivity(
-                    Intent(context, AlarmActivity::class.java).apply {
-                        addFlags(
-                            Intent.FLAG_ACTIVITY_NEW_TASK or
-                                Intent.FLAG_ACTIVITY_SINGLE_TOP or
-                                Intent.FLAG_ACTIVITY_CLEAR_TOP,
-                        )
-                        putExtra(EXTRA_ALARM_ID, alarm.id)
-                        putExtra(EXTRA_ALARM_START_EPOCH, alarmStartEpoch)
-                        putExtra(EXTRA_ANTICIPATION_MINUTES, alarm.anticipationMinutes)
-                        putExtra(EXTRA_ALARM_LABEL, alarm.label)
-                    },
-                )
+                // Full-screen notification is the only exempt path to open the
+                // ringing activity from a background receiver on modern Android.
+                RingingNotifier.showRing(context, alarm, alarmStartEpoch)
 
                 if (alarm.daysBitmask != 0) {
                     AlarmManagerScheduler(context).scheduleNext(alarm)

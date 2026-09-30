@@ -48,10 +48,12 @@ import kotlinx.coroutines.launch
  */
 class AlarmActivity : ComponentActivity() {
     private var player: ExoPlayer? = null
+    private var alarmId: Long = AlarmReceiver.NO_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        alarmId = intent.getLongExtra(AlarmReceiver.EXTRA_ALARM_ID, AlarmReceiver.NO_ID)
         val alarmStartEpoch =
             intent.getLongExtra(AlarmReceiver.EXTRA_ALARM_START_EPOCH, System.currentTimeMillis())
         val anticipationMinutes =
@@ -111,12 +113,14 @@ class AlarmActivity : ComponentActivity() {
     }
 
     private fun stopAndClose() {
+        if (alarmId != AlarmReceiver.NO_ID) RingingNotifier.dismiss(this, alarmId)
         player?.release()
         player = null
         finishAndRemoveTask()
     }
 
     override fun onDestroy() {
+        if (alarmId != AlarmReceiver.NO_ID) RingingNotifier.dismiss(this, alarmId)
         player?.release()
         player = null
         super.onDestroy()

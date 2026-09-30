@@ -12,6 +12,13 @@
     <string name="label_hint">Etiqueta (opcional)</string>
     <string name="alarm_empty">Sin alarmas todavía. Tocá + para crear la primera.</string>
     <string name="exact_alarm_denied_message">Alarmas exactas denegadas: las alarmas pueden sonar tarde. Tocá para abrirlo en los ajustes.</string>
+    <string name="full_screen_denied_message">Avisos a pantalla completa desactivados: el amanecer no se mostrará sobre el bloqueo. Tocá para habilitarlo.</string>
+
+    <!-- Ringing notification (full-screen intent) -->
+    <string name="notification_channel_alarms">Alarmas</string>
+    <string name="notification_channel_alarms_description">Avisos de las alarmas que suenan</string>
+    <string name="ringing_notification_title">Es hora de despertar</string>
+    <string name="ringing_notification_time">Alarma a las %1$02d:%2$02d</string>
 
     <!-- Sunrise / ringing activity -->
     <string name="alarm_anticipation_label">Amanecer (min antes)</string>

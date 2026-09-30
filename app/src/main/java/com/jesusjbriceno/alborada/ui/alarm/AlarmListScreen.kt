@@ -76,6 +76,7 @@ import com.jesusjbriceno.alborada.domain.AlarmDays
 fun AlarmListScreen(viewModel: AlarmListViewModel = viewModel()) {
     val alarms by viewModel.alarms.collectAsState()
     val canScheduleExact by viewModel.canScheduleExact.collectAsState()
+    val canUseFullScreenIntent by viewModel.canUseFullScreenIntent.collectAsState()
 
     var editing by remember { mutableStateOf<Alarm?>(null) }
     var creating by remember { mutableStateOf(false) }
@@ -96,9 +97,9 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = viewModel()) {
         }
     }
 
-    // Re-check the exact-alarm permission when returning from settings.
+    // Re-check permissions when returning from the settings screens.
     LifecycleResumeEffect(viewModel) {
-        viewModel.refreshExactPermission()
+        viewModel.refreshPermissions()
         onPauseOrDispose { }
     }
 
@@ -112,8 +113,15 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = viewModel()) {
     ) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             if (!canScheduleExact) {
-                ExactAlarmDeniedBanner(
+                PermissionBanner(
+                    message = stringResource(R.string.exact_alarm_denied_message),
                     onOpenSettings = { context.openAppAlarmSettings() },
+                )
+            }
+            if (!canUseFullScreenIntent) {
+                PermissionBanner(
+                    message = stringResource(R.string.full_screen_denied_message),
+                    onOpenSettings = { context.openFullScreenSettings() },
                 )
             }
 
@@ -179,7 +187,10 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = viewModel()) {
 }
 
 @Composable
-private fun ExactAlarmDeniedBanner(onOpenSettings: () -> Unit) {
+private fun PermissionBanner(
+    message: String,
+    onOpenSettings: () -> Unit,
+) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
         shape = RoundedCornerShape(12.dp),
@@ -200,7 +211,7 @@ private fun ExactAlarmDeniedBanner(onOpenSettings: () -> Unit) {
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = stringResource(R.string.exact_alarm_denied_message),
+                text = message,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onErrorContainer,
                 modifier = Modifier.weight(1f),
@@ -421,6 +432,21 @@ private fun Context.openAppAlarmSettings() {
     val intent =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                data = Uri.parse("package:$packageName")
+            }
+        } else {
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.parse("package:$packageName")
+            }
+        }
+    runCatching { startActivity(intent) }
+        .onFailure { startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)) }
+}
+
+private fun Context.openFullScreenSettings() {
+    val intent =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply {
                 data = Uri.parse("package:$packageName")
             }
         } else {

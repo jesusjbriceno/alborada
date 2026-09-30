@@ -80,6 +80,17 @@ consentimiento explícito). Las alarmas además se probarán en dispositivo
 | Commit | Mensaje | Checks |
 |---|---|---|
 | `b799101` | amanecer + crescendo | tests 16/16 · build OK · LSP 0 |
+| `54ff063` | fix UI: chips en FlowRow, semana lunes-domingo, editor con scroll | tests 16/16 · build OK |
+
+### Feedback de usuario (capturas emulador)
+
+- Días cortados en el diálogo → `FlowRow` (wrap en 2 líneas).
+- La semana arranca en **lunes** (L M X J V S D); almacenamiento sigue en
+  `Calendar.DAY_OF_WEEK`, solo cambia el orden de UI.
+- Landscape ilegible → editor con `verticalScroll`.
+- Pendiente: verificar el disparo real del amanecer (el emulador se perdió
+  durante la prueba; la alarma 18:30/5 min quedó guardada pero sin disparo
+  confirmado en logcat).
 
 ## Siguiente unidad
 

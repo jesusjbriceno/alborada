@@ -7,6 +7,10 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Alarm apps surface the ringing activity over the lock screen through
+         a full-screen intent; Android 14+ denies it by default for non-alarm
+         apps, so it is declared here and enabled per-device in settings. -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
     <application
         android:allowBackup="true"

@@ -16,9 +16,10 @@ import kotlinx.coroutines.launch
 class AlarmListViewModel(
     application: Application,
 ) : AndroidViewModel(application) {
+    private val app: Application = application
     private val repository =
-        AlarmRepository(AppDatabase.get(application).alarmDao())
-    private val scheduler: AlarmScheduler = AlarmManagerScheduler(application)
+        AlarmRepository(AppDatabase.get(app).alarmDao())
+    private val scheduler: AlarmScheduler = AlarmManagerScheduler(app)
 
     val alarms: StateFlow<List<Alarm>> =
         repository
@@ -28,9 +29,14 @@ class AlarmListViewModel(
     private val _canScheduleExact = MutableStateFlow(scheduler.canScheduleExact())
     val canScheduleExact: StateFlow<Boolean> = _canScheduleExact
 
-    /** Refresh after returning from the exact-alarm settings screen. */
-    fun refreshExactPermission() {
+    private val _canUseFullScreenIntent =
+        MutableStateFlow(RingingNotifier.canUseFullScreenIntent(app))
+    val canUseFullScreenIntent: StateFlow<Boolean> = _canUseFullScreenIntent
+
+    /** Refresh after returning from the permission settings screens. */
+    fun refreshPermissions() {
         _canScheduleExact.value = scheduler.canScheduleExact()
+        _canUseFullScreenIntent.value = RingingNotifier.canUseFullScreenIntent(app)
     }
 
     fun upsert(
